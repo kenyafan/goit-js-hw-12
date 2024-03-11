@@ -38,12 +38,17 @@ export function renderGallery(images) {
   const gallery = document.querySelector('.gallery');
   const galleryMarkup = images.map(createMarkup).join('');
 
-  gallery.innerHTML = galleryMarkup;
+  gallery.insertAdjacentHTML('beforeend', galleryMarkup);
 }
 
 export function renderLoader(isLoading) {
   const loader = document.querySelector('.loader');
   loader.classList.toggle('is-hidden', !isLoading);
+}
+
+export function renderLoadMoreBtn(isHidden) {
+  const loadMoreBtn = document.querySelector('.load-more');
+  loadMoreBtn.classList.toggle('is-hidden', isHidden);
 }
 
 export const renderError = message => {

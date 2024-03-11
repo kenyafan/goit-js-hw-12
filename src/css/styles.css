@@ -115,6 +115,7 @@ body {
   justify-content: center;
   gap: 24px;
   padding: 0;
+  margin-bottom: 32px;
 }
 .gallery-item {
   border: 1px solid #808080;
@@ -152,6 +153,28 @@ p {
   letter-spacing: 0.04em;
   color: #2e2f42;
 }
+
+.load-more {
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: #fff;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+  padding: 8px 16px;
+  width: 125px;
+  height: 40px;
+  background: #4e75ff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.load-more:hover {
+  background-color: #6c8cff;
+}
+
 /* #endregion */
 
 /* #region Loader */
