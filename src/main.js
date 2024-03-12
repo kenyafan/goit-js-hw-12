@@ -37,47 +37,43 @@ searchForm.addEventListener('submit', async event => {
   }
 
   renderLoader(true);
-  renderLoadMoreBtn(true);
 
   try {
     const images = await fetchImages(searchQuery, currentPage);
-
-    if (images.length === 0) {
+    if (images.hits.length === 0) {
       renderError(
         'Sorry, there are no images matching <br> your search query. Please try again!'
       );
-    } else {
-      renderGallery(images);
-      maxPage = Math.ceil(images.totalHits / perPage);
-      renderLoadMoreBtn(maxPage === 1);
-
-      lightbox.refresh();
+      return;
     }
+    renderGallery(images.hits);
+
+    lightbox.refresh();
+    images.totalHits < perPage
+      ? renderLoadMoreBtn(true)
+      : renderLoadMoreBtn(false);
   } catch (error) {
     renderError(error.message);
+  } finally {
+    renderLoader(false);
+    searchForm.reset();
   }
-  renderLoader(false);
-  searchForm.reset();
 });
 
 loadMoreBtn.addEventListener('click', async () => {
-  if (currentPage >= maxPage) {
-    return;
-  }
-
   currentPage += 1;
   renderLoader(true);
 
   try {
     const images = await fetchImages(searchQuery, currentPage);
 
-    if (images.length === 0) {
-      renderError('We’re sorry, but you’ve reached the end of search results.');
-      renderLoadMoreBtn(false);
-    } else {
-      renderGallery(images);
-      lightbox.refresh();
-      renderLoadMoreBtn(currentPage === maxPage);
+    renderGallery(images.hits);
+    lightbox.refresh();
+
+    const maxPage = Math.ceil(images.totalHits / perPage);
+    if (maxPage === currentPage) {
+      renderLoadMoreBtn(true);
+      renderError("We're sorry, but you've reached the end of search results.");
     }
   } catch (error) {
     renderError(error.message);
