@@ -1,10 +1,12 @@
 import { fetchImages } from './js/pixabay-api';
+
 import {
   renderGallery,
   renderLoader,
   renderError,
   renderLoadMoreBtn,
 } from './js/render-functions.js';
+
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
@@ -19,6 +21,8 @@ const loadMoreBtn = document.querySelector('.load-more');
 
 let currentPage = 1;
 let searchQuery = '';
+let maxPage = 0;
+let perPage = 15;
 
 searchForm.addEventListener('submit', async event => {
   event.preventDefault();
@@ -44,26 +48,24 @@ searchForm.addEventListener('submit', async event => {
       );
     } else {
       renderGallery(images);
+      maxPage = Math.ceil(images.totalHits / perPage);
+      renderLoadMoreBtn(maxPage === 1);
 
       lightbox.refresh();
-
-      if (images.length < 15) {
-        renderLoadMoreBtn(true);
-      } else {
-        renderLoadMoreBtn(false);
-      }
     }
   } catch (error) {
     renderError(error.message);
-  } finally {
-    renderLoader(false);
-    searchForm.reset();
   }
+  renderLoader(false);
+  searchForm.reset();
 });
 
 loadMoreBtn.addEventListener('click', async () => {
-  currentPage += 1;
+  if (currentPage >= maxPage) {
+    return;
+  }
 
+  currentPage += 1;
   renderLoader(true);
 
   try {
@@ -71,27 +73,17 @@ loadMoreBtn.addEventListener('click', async () => {
 
     if (images.length === 0) {
       renderError('We’re sorry, but you’ve reached the end of search results.');
-      renderLoadMoreBtn(true);
+      renderLoadMoreBtn(false);
     } else {
       renderGallery(images);
-
       lightbox.refresh();
-
-      if (images.length < 15) {
-        renderLoadMoreBtn(true);
-      } else {
-        renderError(
-          'We’re sorry, but you’ve reached the end of search results.'
-        );
-        renderLoadMoreBtn(false);
-      }
+      renderLoadMoreBtn(currentPage === maxPage);
     }
   } catch (error) {
     renderError(error.message);
-  } finally {
-    smoothScroll();
-    renderLoader(false);
   }
+  smoothScroll();
+  renderLoader(false);
 });
 
 function smoothScroll() {
