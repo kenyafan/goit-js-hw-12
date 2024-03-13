@@ -41,6 +41,8 @@ searchForm.addEventListener('submit', async event => {
   try {
     const images = await fetchImages(searchQuery, currentPage);
     if (images.hits.length === 0) {
+      renderLoadMoreBtn(true);
+      console.log(123);
       renderError(
         'Sorry, there are no images matching <br> your search query. Please try again!'
       );
@@ -49,9 +51,14 @@ searchForm.addEventListener('submit', async event => {
     renderGallery(images.hits);
 
     lightbox.refresh();
-    images.totalHits < perPage
-      ? renderLoadMoreBtn(true)
-      : renderLoadMoreBtn(false);
+    const maxPage = Math.ceil(images.totalHits / perPage);
+
+    if (maxPage === currentPage) {
+      renderLoadMoreBtn(true);
+      renderError("We're sorry, but you've reached the end of search results.");
+    } else {
+      renderLoadMoreBtn(false);
+    }
   } catch (error) {
     renderError(error.message);
   } finally {
